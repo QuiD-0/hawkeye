@@ -24,6 +24,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'io.appium:java-client:8.1.1'
+    implementation 'org.seleniumhq.selenium:selenium-java:4.11.0'
 }
 
 tasks.withType(KotlinCompile) {
