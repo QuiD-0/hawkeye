@@ -1,16 +1,16 @@
-package com.quid.hawkeye.e9pay.gateway.appium
+package com.quid.hawkeye.app.e9pay.gateway.appium
 
-import com.quid.hawkeye.app.App
-import com.quid.hawkeye.app.AppInfo
+import com.quid.hawkeye.app.usecase.App
+import com.quid.hawkeye.app.domain.AppInfo.E9PAY
+import com.quid.hawkeye.app.domain.PhoneType
+import com.quid.hawkeye.app.domain.Rate
 import com.quid.hawkeye.config.AppiumConfig
-import com.quid.hawkeye.app.PhoneType
-import com.quid.hawkeye.e9pay.domain.E9Pay
 import io.appium.java_client.AppiumBy
 import org.openqa.selenium.support.ui.WebDriverWait
 import java.time.Duration
 
 class E9PayApp(phone: PhoneType) : App {
-    private val config = AppiumConfig(phone, AppInfo.E9PAY)
+    private val config = AppiumConfig(phone, E9PAY)
     private val driver = WebDriverWait(config.driver(), Duration.ofSeconds(10))
 
     override fun initApp() {
@@ -21,7 +21,7 @@ class E9PayApp(phone: PhoneType) : App {
         }
     }
 
-    override fun getRateList(): List<E9Pay> {
+    override fun getRateList(): List<Rate> {
         val text = driver.until { it.findElement(AppiumBy.id(RATE)).text }
         return mutableListOf()
     }

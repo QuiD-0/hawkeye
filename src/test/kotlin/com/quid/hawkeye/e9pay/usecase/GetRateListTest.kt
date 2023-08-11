@@ -1,7 +1,7 @@
 package com.quid.hawkeye.e9pay.usecase
 
-import com.quid.hawkeye.app.PhoneType
-import com.quid.hawkeye.e9pay.gateway.appium.E9PayApp
+import com.quid.hawkeye.app.domain.PhoneType
+import com.quid.hawkeye.app.e9pay.gateway.appium.E9PayApp
 import org.junit.jupiter.api.Test
 
 

@@ -1,4 +1,6 @@
-package com.quid.hawkeye.app
+package com.quid.hawkeye.app.usecase
+
+import com.quid.hawkeye.app.domain.Rate
 
 interface App {
     fun initApp()
