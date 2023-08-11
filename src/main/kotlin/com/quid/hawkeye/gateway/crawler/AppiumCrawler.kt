@@ -14,17 +14,21 @@ class AppiumCrawler(
 
     @Scheduled(fixedDelay = 100000)
     fun crawl() {
-        getRateList.forEach {
-            logger.info("========Crawling Start ${it.javaClass.simpleName}========")
-            with(it.driver(GALAXY_A30)) {
-                initApp()
-                getRateList()
-                    .also {
-//                        save(it)
-                        closeApp()
-                    }
-                logger.info("========Crawling End ${it.javaClass.simpleName}========")
+        try {
+            getRateList.forEach {
+                logger.info("========Crawling Start ${it.javaClass.simpleName}========")
+                with(it) {
+                    initApp(GALAXY_A30)
+                    getRateList()
+                        .also {
+//                            save(it)
+                            closeApp()
+                        }
+                    logger.info("========Crawling End ${it.javaClass.simpleName}========")
+                }
             }
+        }catch (e: Exception){
+            e.printStackTrace()
         }
     }
 }

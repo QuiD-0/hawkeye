@@ -44,7 +44,7 @@ interface E9PayDriver {
         }
 
         override fun getRateList(): List<Rate> {
-            return mutableListOf()
+            return mutableListOf(Rate("E9PAY"))
         }
 
         override fun close() {
