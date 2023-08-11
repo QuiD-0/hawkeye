@@ -17,12 +17,28 @@ class GetRateListTest {
         val driver = config.driver()
 
         val wait = WebDriverWait(driver, Duration.ofSeconds(10))
-        wait.until{ driver.findElement(AppiumBy.xpath(LANGUAGE_SELECT)).text.also { println(it) } }
+        selectLanguage(wait)
+        permissionAllow(wait)
 
         config.close()
     }
 
+    private fun selectLanguage(wait: WebDriverWait) {
+        wait.until { it.findElement(AppiumBy.id(KOREA_BTN)).click() }
+    }
+
+    private fun permissionAllow(wait: WebDriverWait) {
+        wait.until { it.findElement(AppiumBy.id(PERMISSION_LIST_ALLOW)).click() }
+        wait.until { it.findElement(AppiumBy.id(PERMISSION_ALLOW_FOREGROUND_ONLY)).click() }
+        wait.until { it.findElement(AppiumBy.id(PERMISSION_ALLOW_BUTTON)).click() }
+        wait.until { it.findElement(AppiumBy.id(PERMISSION_ALLOW_BUTTON)).click() }
+        wait.until { it.findElement(AppiumBy.id(PERMISSION_ALLOW_BUTTON)).click() }
+    }
+
     companion object {
-        private const val LANGUAGE_SELECT = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.ScrollView/android.widget.LinearLayout/android.widget.TextView[1]"
+        private const val KOREA_BTN = "com.e9pay.remittance2:id/btn_ko"
+        private const val PERMISSION_LIST_ALLOW = "com.e9pay.remittance2:id/btn_ok"
+        private const val PERMISSION_ALLOW_FOREGROUND_ONLY = "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+        private const val PERMISSION_ALLOW_BUTTON = "com.android.permissioncontroller:id/permission_allow_button"
     }
 }
