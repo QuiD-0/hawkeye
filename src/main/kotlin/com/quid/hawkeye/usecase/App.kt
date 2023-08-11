@@ -4,8 +4,7 @@ import com.quid.hawkeye.domain.PhoneType
 import com.quid.hawkeye.domain.Rate
 
 interface App {
-    fun driver(phone: PhoneType): App
-    fun initApp()
+    fun initApp(phone: PhoneType)
     fun getRateList(): List<Rate>
     fun closeApp()
 }
