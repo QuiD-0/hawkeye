@@ -1,4 +1,4 @@
-package com.quid.hawkeye.appium
+package com.quid.hawkeye.app
 
 enum class AppInfo(
     val packageName: String,
