@@ -15,7 +15,7 @@ class AppiumCrawler(
     @Scheduled(fixedDelay = 100000)
     fun crawl() {
         getRateList.forEach {
-            logger.info("Crawling Start ${it.javaClass.simpleName}")
+            logger.info("========Crawling Start ${it.javaClass.simpleName}========")
             it.execute(GALAXY_A30).also { data -> println(data) }
         }
     }

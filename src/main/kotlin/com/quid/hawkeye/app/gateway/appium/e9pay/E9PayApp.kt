@@ -1,4 +1,4 @@
-package com.quid.hawkeye.app.e9pay.gateway.appium
+package com.quid.hawkeye.app.gateway.appium.e9pay
 
 import com.quid.hawkeye.app.usecase.App
 import com.quid.hawkeye.app.domain.AppInfo.E9PAY

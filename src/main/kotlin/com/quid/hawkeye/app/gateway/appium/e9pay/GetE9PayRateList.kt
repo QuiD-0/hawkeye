@@ -1,8 +1,7 @@
-package com.quid.hawkeye.app.e9pay.usecase
+package com.quid.hawkeye.app.gateway.appium.e9pay
 
 import com.quid.hawkeye.app.domain.PhoneType
 import com.quid.hawkeye.app.domain.Rate
-import com.quid.hawkeye.app.e9pay.gateway.appium.E9PayApp
 import com.quid.hawkeye.app.usecase.GetRateList
 import org.springframework.stereotype.Service
 
