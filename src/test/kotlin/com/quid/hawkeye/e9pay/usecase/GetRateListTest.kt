@@ -13,12 +13,13 @@ class GetRateListTest {
 
     @Test
     fun `test execute`() {
-        val driver = AppiumConfig(GALAXY_A30, AppInfo.E9PAY).driver()
+        val config = AppiumConfig(GALAXY_A30, AppInfo.E9PAY)
+        val driver = config.driver()
 
         val wait = WebDriverWait(driver, Duration.ofSeconds(10))
         wait.until{ driver.findElement(AppiumBy.xpath(LANGUAGE_SELECT)).text.also { println(it) } }
 
-        driver.close()
+        config.close()
     }
 
     companion object {
