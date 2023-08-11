@@ -17,17 +17,15 @@ class AppiumCrawler(
         try {
             getRateList.forEach {
                 logger.info("========Crawling Start ${it.javaClass.simpleName}========")
-                with(it) {
-                    initApp(GALAXY_A30)
-                    getRateList()
-                        .also {
-//                            save(it)
-                            closeApp()
-                        }
-                    logger.info("========Crawling End ${it.javaClass.simpleName}========")
-                }
+                it.initApp(GALAXY_A30)
+                    .getRateList()
+                    .also { data->
+//                        save(data)
+                        it.closeApp()
+                    }
+                logger.info("========Crawling End ${it.javaClass.simpleName}========")
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

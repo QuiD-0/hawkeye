@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component
 class E9PayApp(
     private val driver: E9PayDriver,
 ) : App {
-    override fun initApp(phone: PhoneType) =
+    override fun initApp(phone: PhoneType): App =
         with(driver) {
             init(phone)
             selectLanguage()
             permissionAllow()
-        }
+        }.let { this }
 
     override fun getRateList(): List<Rate> =
         driver.gotoRatePage()
