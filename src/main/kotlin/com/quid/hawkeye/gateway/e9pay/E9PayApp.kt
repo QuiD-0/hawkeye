@@ -1,17 +1,25 @@
-package com.quid.hawkeye.app.gateway.appium.e9pay
+package com.quid.hawkeye.gateway.e9pay
 
-import com.quid.hawkeye.app.usecase.App
-import com.quid.hawkeye.app.domain.AppInfo.E9PAY
-import com.quid.hawkeye.app.domain.PhoneType
-import com.quid.hawkeye.app.domain.Rate
+import com.quid.hawkeye.usecase.App
+import com.quid.hawkeye.domain.AppInfo.E9PAY
+import com.quid.hawkeye.domain.PhoneType
+import com.quid.hawkeye.domain.Rate
 import com.quid.hawkeye.config.AppiumConfig
 import io.appium.java_client.AppiumBy
 import org.openqa.selenium.support.ui.WebDriverWait
+import org.springframework.stereotype.Component
 import java.time.Duration
 
-class E9PayApp(phone: PhoneType) : App {
-    private val config = AppiumConfig(phone, E9PAY)
-    private val driver = WebDriverWait(config.driver(), Duration.ofSeconds(10))
+@Component
+class E9PayApp: App {
+    private lateinit var config: AppiumConfig
+    private lateinit var driver: WebDriverWait
+
+    override fun driver(phone: PhoneType): App {
+        this.config = AppiumConfig(phone, E9PAY)
+        this.driver = WebDriverWait(config.driver(), Duration.ofSeconds(10))
+        return this
+    }
 
     override fun initApp() {
         driver.also {

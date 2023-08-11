@@ -1,7 +1,7 @@
 package com.quid.hawkeye.config
 
-import com.quid.hawkeye.app.domain.AppInfo
-import com.quid.hawkeye.app.domain.PhoneType
+import com.quid.hawkeye.domain.AppInfo
+import com.quid.hawkeye.domain.PhoneType
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.remote.AutomationName
 import io.appium.java_client.remote.MobileCapabilityType

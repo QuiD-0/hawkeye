@@ -1,4 +1,4 @@
-package com.quid.hawkeye.app.domain
+package com.quid.hawkeye.domain
 
 enum class PhoneType(
     val udid: String,
