@@ -28,7 +28,7 @@ class AppiumConfig(
         }
 
     fun driver(): WebDriver = AndroidDriver(
-        URL("http://127.0.0.1:4725"), getOptions()
+        URL("http://127.0.0.1:4723"), getOptions()
     ).also { driver = it }
 
     fun close() {
