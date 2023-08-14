@@ -32,6 +32,7 @@ class AppiumConfig(
     ).also { driver = it }
 
     fun close() {
+        driver.close()
         driver.quit()
     }
 
