@@ -52,7 +52,6 @@ interface E9PayDriver {
             while (countryIndex<=14){
                 val country = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}1]"))[0].text }
                 val currency = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}2]"))[0].text }
-                println("index: $countryIndex, country: $country, currency: $currency")
                 driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex]"))[0].click() }
                 sleep(3000)
                 //횐율 가져오기
@@ -67,10 +66,7 @@ interface E9PayDriver {
                 if(!test.contains(prevCountry+prevCurrency)){
                     countryIndex--
                 }
-
-                println("prev = $prevCountry$prevCurrency current = $country$currency")
             }
-            println(test)
             return mutableListOf()
         }
 
