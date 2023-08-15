@@ -23,7 +23,7 @@ interface E9PayDriver {
     fun getRateList(): List<Rate>
 
     @Component
-    class E9PayDriverImpl: E9PayDriver {
+    class E9PayDriverImpl : E9PayDriver {
         private lateinit var config: AppiumConfig
         private lateinit var driver: WebDriverWait
 
@@ -52,53 +52,56 @@ interface E9PayDriver {
             var countryIndex = 1
             val test = mutableListOf<String>()
             selectCountry()
-            while (true) testGermanyRate()
-//            val pageCount = getPageCount()
-//            while (countryIndex<=pageCount){
-//                val country = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}1]"))[0].text }
-//                val currency = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}2]"))[0].text }
-//                driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex]"))[0].click() }
-//                val typeCount = getRemittanceTypeCount()
-//                for (typeIndex in 1 .. typeCount){
-//                    driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
-//                    sleep(1000)
-//                    driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[$typeIndex]"))[0].click() }
-//                    sleep(500)
-//                    getRateInfo(country)
-//                }
-//
-//                test.add(country+currency)
-//                selectCountry()
-//                countryIndex++
-//                val prevCode = getPrevCode(countryIndex)
-//                if(!test.contains(prevCode)){
-//                    countryIndex--
-//                }
-//            }
+            val pageCount = getPageCount()
+            while (countryIndex <= pageCount) {
+                val country =
+                    driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}1]"))[0].text }
+                val currency =
+                    driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}2]"))[0].text }
+                driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex]"))[0].click() }
+                val typeCount = getRemittanceTypeCount()
+                for (typeIndex in 1..typeCount) {
+                    driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
+                    sleep(500)
+                    driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[$typeIndex]"))[0].click() }
+                    retry(3) { getRateInfo(country) }
+                }
+
+                test.add(country + currency)
+                selectCountry()
+                countryIndex++
+                val prevCode = getPrevCode(countryIndex)
+                if (!test.contains(prevCode)) {
+                    countryIndex--
+                }
+            }
             return mutableListOf()
         }
 
-        private fun testGermanyRate() {
-            driver.until { it.findElement(AppiumBy.id("com.e9pay.remittance2:id/search_editText")).sendKeys("독") }
-            driver.until { it.findElement(AppiumBy.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ListView/android.view.ViewGroup[1]")).click() }
-            retry(3){
-                driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
-                driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
-            }
-            getRateInfo("독일")
-            selectCountry()
-        }
+//        private fun testGermanyRate() {
+//            driver.until { it.findElement(AppiumBy.id("com.e9pay.remittance2:id/search_editText")).sendKeys("독") }
+//            driver.until {
+//                it.findElement(AppiumBy.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ListView/android.view.ViewGroup[1]"))
+//                    .click()
+//            }
+//            retry(3) {
+//                driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
+//                sleep(500)
+//                driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
+//            }
+//            getRateInfo("독일")
+//            selectCountry()
+//        }
 
         private fun retry(i: Int, function: () -> Unit) {
             try {
-                driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
-                driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
-            }catch (e: Exception){
-                if(i>0){
+                function()
+            } catch (e: Exception) {
+                if (i > 0) {
                     println("retry")
                     sleep(3000)
-                    retry(i-1, function)
-                }else{
+                    retry(i - 1, function)
+                } else {
                     throw e
                 }
             }
@@ -120,12 +123,12 @@ interface E9PayDriver {
         }
 
         private fun getRemittanceTypeCount(): Int {
-            driver.until(ExpectedConditions.presenceOfAllElementsLocatedBy(AppiumBy.id("com.e9pay.remittance2:id/editText2")))
-            driver.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.id("com.e9pay.remittance2:id/editText2")))
-
-            driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
-            val typeCount = driver.until { it.findElements(AppiumBy.xpath(REMITTANCE_TYPE_LIST)).size }
-            driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
+            var typeCount = 1
+            retry(3) {
+                driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
+                typeCount = driver.until { it.findElements(AppiumBy.xpath(REMITTANCE_TYPE_LIST)).size }
+                driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
+            }
             return typeCount
         }
 
@@ -146,16 +149,21 @@ interface E9PayDriver {
         companion object {
             private const val KOREA_BTN = "com.e9pay.remittance2:id/btn_ko"
             private const val PERMISSION_LIST_ALLOW = "com.e9pay.remittance2:id/btn_ok"
-            private const val PERMISSION_ALLOW_FOREGROUND_ONLY = "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+            private const val PERMISSION_ALLOW_FOREGROUND_ONLY =
+                "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
             private const val PERMISSION_ALLOW_BUTTON = "com.android.permissioncontroller:id/permission_allow_button"
             private const val RATE_NAV_BTN = "com.e9pay.remittance2:id/exchangeRate"
             private const val SELECT_COUNTRY = "com.e9pay.remittance2:id/nation_change_container"
-            private const val COUNTRY_LIST_COUNT = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ListView/*"
-            private const val PREV_COUNTRY_CURRENCY_LIST = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ListView/android.view.ViewGroup["
+            private const val COUNTRY_LIST_COUNT =
+                "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ListView/*"
+            private const val PREV_COUNTRY_CURRENCY_LIST =
+                "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ListView/android.view.ViewGroup["
             private const val POST_COUNTRY_CURRENCY_LIST = "]/android.widget.TextView["
             private const val REMITTANCE_TYPE_SELECTOR = "com.e9pay.remittance2:id/spinner"
-            private const val REMITTANCE_TYPE_LIST = "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.ListView/*"
-            private const val REMITTANCE_TYPE = "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.ListView/android.widget.TextView"
+            private const val REMITTANCE_TYPE_LIST =
+                "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.ListView/*"
+            private const val REMITTANCE_TYPE =
+                "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.ListView/android.widget.TextView"
             private const val REMITTANCE_TYPE_TEXT = "android:id/text1"
             private const val SEND_AMOUNT = "com.e9pay.remittance2:id/editText"
             private const val SEND_CURRENCY = "com.e9pay.remittance2:id/remittanceMoneyUnit"
