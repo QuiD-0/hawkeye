@@ -5,10 +5,13 @@ import com.quid.hawkeye.domain.AppInfo
 import com.quid.hawkeye.domain.PhoneType
 import com.quid.hawkeye.domain.Rate
 import io.appium.java_client.AppiumBy
+import org.openqa.selenium.interactions.Actions
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.stereotype.Component
 import java.lang.Thread.sleep
 import java.time.Duration
+
 
 interface E9PayDriver {
     fun init(phone: PhoneType)
@@ -48,12 +51,12 @@ interface E9PayDriver {
             var countryIndex = 1
             val test = mutableListOf<String>()
             selectCountry()
+//            testGermanyRate()
             val pageCount = getPageCount()
             while (countryIndex<=pageCount){
                 val country = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}1]"))[0].text }
                 val currency = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}2]"))[0].text }
                 driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex]"))[0].click() }
-                sleep(3000)
                 val typeCount = getRemittanceTypeCount()
                 for (typeIndex in 1 .. typeCount){
                     driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
@@ -74,8 +77,16 @@ interface E9PayDriver {
             return mutableListOf()
         }
 
+        private fun testGermanyRate() {
+            driver.until { it.findElement(AppiumBy.id("com.e9pay.remittance2:id/search_editText")).sendKeys("독") }
+            driver.until { it.findElement(AppiumBy.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ListView/android.view.ViewGroup[1]")).click() }
+            driver.until(ExpectedConditions.presenceOfAllElementsLocatedBy(AppiumBy.id("com.e9pay.remittance2:id/editText2")))
+            driver.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.id("com.e9pay.remittance2:id/editText2")))
+            getRateInfo("독일")
+        }
+
         private fun getPageCount(): Int {
-            return driver.until { it.findElements(AppiumBy.xpath(COUNTRY_LIST_COUNT)).size }.also { println("count = $it") }
+            return driver.until { it.findElements(AppiumBy.xpath(COUNTRY_LIST_COUNT)).size }
         }
 
         private fun getRateInfo(country: String) {
@@ -86,19 +97,16 @@ interface E9PayDriver {
             val receiveCurrency =
                 driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text }
             val rate = driver.until { it.findElement(AppiumBy.id(RATE)).text }
-            println("""rateInfo :
-                    $country 
-                    $type
-                    $sendAmount $sendCurrency
-                    $receiveAmount $receiveCurrency
-                    $rate
-                    """)
+            println("rateInfo :$country $type $sendAmount $sendCurrency $receiveAmount $receiveCurrency $rate")
         }
 
         private fun getRemittanceTypeCount(): Int {
+            driver.until(ExpectedConditions.presenceOfAllElementsLocatedBy(AppiumBy.id("com.e9pay.remittance2:id/editText2")))
+            driver.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.id("com.e9pay.remittance2:id/editText2")))
+
             driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
-            sleep(1000)
             val typeCount = driver.until { it.findElements(AppiumBy.xpath(REMITTANCE_TYPE_LIST)).size }
+            sleep(500)
             driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
             return typeCount
         }

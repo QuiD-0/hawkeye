@@ -1,5 +1,6 @@
 package com.quid.hawkeye.gateway.crawler
 
+import com.quid.hawkeye.domain.PhoneType
 import com.quid.hawkeye.domain.PhoneType.GALAXY_A30
 import com.quid.hawkeye.usecase.App
 import org.slf4j.LoggerFactory
@@ -17,7 +18,7 @@ class AppiumCrawler(
         getRateList.forEach {
             try {
                 logger.info("========Crawling Start ${it.javaClass.simpleName}========")
-                it.initApp(GALAXY_A30)
+                it.initApp(PhoneType.GALAXY_S10E)
                     .getRateList()
                     .also { data ->
 //                        save(data)
