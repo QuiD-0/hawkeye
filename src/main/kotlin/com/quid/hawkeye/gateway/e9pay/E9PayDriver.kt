@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.stereotype.Component
 import java.lang.Thread.sleep
 import java.time.Duration
+import java.util.concurrent.Flow
 
 
 interface E9PayDriver {
@@ -51,38 +52,56 @@ interface E9PayDriver {
             var countryIndex = 1
             val test = mutableListOf<String>()
             selectCountry()
-//            testGermanyRate()
-            val pageCount = getPageCount()
-            while (countryIndex<=pageCount){
-                val country = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}1]"))[0].text }
-                val currency = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}2]"))[0].text }
-                driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex]"))[0].click() }
-                val typeCount = getRemittanceTypeCount()
-                for (typeIndex in 1 .. typeCount){
-                    driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
-                    sleep(1000)
-                    driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[$typeIndex]"))[0].click() }
-                    sleep(500)
-                    getRateInfo(country)
-                }
-
-                test.add(country+currency)
-                selectCountry()
-                countryIndex++
-                val prevCode = getPrevCode(countryIndex)
-                if(!test.contains(prevCode)){
-                    countryIndex--
-                }
-            }
+            while (true) testGermanyRate()
+//            val pageCount = getPageCount()
+//            while (countryIndex<=pageCount){
+//                val country = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}1]"))[0].text }
+//                val currency = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}2]"))[0].text }
+//                driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex]"))[0].click() }
+//                val typeCount = getRemittanceTypeCount()
+//                for (typeIndex in 1 .. typeCount){
+//                    driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
+//                    sleep(1000)
+//                    driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[$typeIndex]"))[0].click() }
+//                    sleep(500)
+//                    getRateInfo(country)
+//                }
+//
+//                test.add(country+currency)
+//                selectCountry()
+//                countryIndex++
+//                val prevCode = getPrevCode(countryIndex)
+//                if(!test.contains(prevCode)){
+//                    countryIndex--
+//                }
+//            }
             return mutableListOf()
         }
 
         private fun testGermanyRate() {
             driver.until { it.findElement(AppiumBy.id("com.e9pay.remittance2:id/search_editText")).sendKeys("독") }
             driver.until { it.findElement(AppiumBy.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/androidx.appcompat.widget.LinearLayoutCompat/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ListView/android.view.ViewGroup[1]")).click() }
-            driver.until(ExpectedConditions.presenceOfAllElementsLocatedBy(AppiumBy.id("com.e9pay.remittance2:id/editText2")))
-            driver.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.id("com.e9pay.remittance2:id/editText2")))
+            retry(3){
+                driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
+                driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
+            }
             getRateInfo("독일")
+            selectCountry()
+        }
+
+        private fun retry(i: Int, function: () -> Unit) {
+            try {
+                driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
+                driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
+            }catch (e: Exception){
+                if(i>0){
+                    println("retry")
+                    sleep(3000)
+                    retry(i-1, function)
+                }else{
+                    throw e
+                }
+            }
         }
 
         private fun getPageCount(): Int {
@@ -106,7 +125,6 @@ interface E9PayDriver {
 
             driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
             val typeCount = driver.until { it.findElements(AppiumBy.xpath(REMITTANCE_TYPE_LIST)).size }
-            sleep(500)
             driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
             return typeCount
         }
