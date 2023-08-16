@@ -51,6 +51,7 @@ interface E9PayDriver {
                     rateList.add(getRateInfo(country))
                 } else{
                     for (typeIndex in 1 .. typeCount){
+                        sleep(500)
                         driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
                         sleep(500)
                         driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[$typeIndex]"))[0].click() }
@@ -79,7 +80,6 @@ interface E9PayDriver {
             val sendCurrency = driver.until { it.findElement(AppiumBy.id(SEND_CURRENCY)).text }
             val receiveAmount = driver.until { it.findElement(AppiumBy.id(RECEIVE_AMOUNT)).text }
             val receiveCurrency = driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text }
-            logger.info("country: $country, type: $type, sendAmount: $sendAmount, sendCurrency: $sendCurrency, receiveAmount: $receiveAmount, receiveCurrency: $receiveCurrency")
             return Rate(
                 appName = AppInfo.E9PAY.name,
                 country = country,
@@ -88,7 +88,7 @@ interface E9PayDriver {
                 sendCurrency = sendCurrency,
                 receiveAmount = receiveAmount.replace(",","").toBigDecimal(),
                 receiveCurrency = receiveCurrency,
-            )
+            ).also { logger.info("$it") }
         }
 
 
