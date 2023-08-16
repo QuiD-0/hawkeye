@@ -10,7 +10,7 @@ class GetRateListTest {
 
     @Test
     fun `test execute`() {
-        val data = with(E9PayApp(E9PayDriver.E9PayDriverImpl())) {
+        val data = with(E9PayApp(E9PayDriver.E9PayAppiumDriver())) {
             initApp(PhoneType.GALAXY_S10E)
                 .getRateList().also { closeApp() }
         }

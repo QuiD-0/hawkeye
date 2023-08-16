@@ -19,7 +19,7 @@ interface E9PayDriver {
     fun getRateList(): List<Rate>
 
     @Component
-    class E9PayDriverImpl : E9PayDriver {
+    class E9PayAppiumDriver : E9PayDriver {
         private lateinit var config: AppiumConfig
         private lateinit var driver: WebDriverWait
 

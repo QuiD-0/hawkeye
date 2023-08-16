@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 class E9PayApp(
     private val driver: E9PayDriver,
 ) : App {
+
     override fun initApp(phone: PhoneType): App =
         with(driver) {
             init(phone)
