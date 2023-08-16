@@ -12,22 +12,14 @@ import java.math.BigDecimal
 import java.time.Duration
 
 interface E9PayDriver {
-    fun init(phone: PhoneType)
     fun selectLanguage()
     fun permissionAllow()
     fun gotoRatePage()
-    fun close()
     fun getRateList(): List<Rate>
 
-    @Component
-    class E9PayAppiumDriver : E9PayDriver {
-        private lateinit var config: AppiumConfig
-        private lateinit var driver: WebDriverWait
-
-        override fun init(phone: PhoneType) {
-            this.config = AppiumConfig(phone, AppInfo.E9PAY)
-            this.driver = WebDriverWait(config.driver(), Duration.ofSeconds(10))
-        }
+    class E9PayAppiumDriver(
+        private val driver: WebDriverWait
+    ) : E9PayDriver {
 
         override fun selectLanguage() {
             driver.until { it.findElement(AppiumBy.id(KOREA_BTN)).click() }
@@ -76,12 +68,7 @@ interface E9PayDriver {
                     countryIndex--
                 }
             }
-            return mutableListOf()
-        }
-
-
-        override fun close() {
-            config.close()
+            return rateList
         }
 
         private fun getPageCount(): Int {
@@ -95,13 +82,14 @@ interface E9PayDriver {
             val receiveAmount = driver.until { it.findElement(AppiumBy.id(RECEIVE_AMOUNT)).text }
             val receiveCurrency = driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text }
             val rate = driver.until { it.findElement(AppiumBy.id(RATE)).text }
+            println("country: $country, type: $type, sendAmount: $sendAmount, sendCurrency: $sendCurrency, receiveAmount: $receiveAmount, receiveCurrency: $receiveCurrency, rate: $rate")
             return Rate(
                 appName = AppInfo.E9PAY.name,
                 country = country,
                 remittanceType = type,
-                sendAmount = sendAmount.toBigDecimal(),
+                sendAmount = sendAmount.replace(",","").toBigDecimal(),
                 sendCurrency = sendCurrency,
-                receiveAmount = receiveAmount.toBigDecimal(),
+                receiveAmount = receiveAmount.replace(",","").toBigDecimal(),
                 receiveCurrency = receiveCurrency,
                 rate = calculateRate(rate)
             )
@@ -115,6 +103,7 @@ interface E9PayDriver {
             var typeCount = 1
             retry(3) {
                 driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
+                sleep(500)
                 typeCount = driver.until { it.findElements(AppiumBy.xpath(REMITTANCE_TYPE_LIST)).size }
                 driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
             }
