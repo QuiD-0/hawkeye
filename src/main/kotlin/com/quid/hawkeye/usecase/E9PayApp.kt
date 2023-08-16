@@ -16,21 +16,24 @@ class E9PayApp: App {
     private lateinit var wait: WebDriverWait
     private lateinit var driver: E9PayDriver
 
-    override fun initApp(phone: PhoneType): App {
+    override fun getRateList(): List<Rate> {
+        driver.gotoRatePage()
+        return driver.getRateList()
+    }
+
+    override fun use(phone: PhoneType, block: (App) -> Unit) {
+        initApp(phone)
+        block(this)
+        config.close()
+    }
+
+    private fun initApp(phone: PhoneType) {
         this.config = AppiumConfig(phone, AppInfo.E9PAY)
         this.wait = WebDriverWait(config.driver(), Duration.ofSeconds(10))
         this.driver = E9PayAppiumDriver(wait).apply {
             selectLanguage()
             permissionAllow()
         }
-        return this
     }
-
-    override fun getRateList(): List<Rate> {
-        driver.gotoRatePage()
-        return driver.getRateList()
-    }
-
-    override fun closeApp() = config.close()
 
 }

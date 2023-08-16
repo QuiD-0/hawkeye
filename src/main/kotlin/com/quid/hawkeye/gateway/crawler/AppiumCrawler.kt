@@ -19,12 +19,9 @@ class AppiumCrawler(
         appList.forEach {
             try {
                 logger.info("========Crawling Start ${it.javaClass.simpleName}========")
-                it.initApp(PhoneType.GALAXY_A30)
-                    .getRateList()
-                    .also { data ->
-                        rateGateway.save(data)
-                        it.closeApp()
-                    }
+                it.use(PhoneType.GALAXY_A30) { app ->
+                    rateGateway.save(app.getRateList())
+                }
                 logger.info("========Crawling End ${it.javaClass.simpleName}========")
             } catch (e: Exception) {
                 logger.info("========Crawling Error ${it.javaClass.simpleName}========")
