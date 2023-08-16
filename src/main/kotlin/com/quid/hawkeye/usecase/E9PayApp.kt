@@ -26,9 +26,10 @@ class E9PayApp: App {
         return this
     }
 
-    override fun getRateList(): List<Rate> =
+    override fun getRateList(): List<Rate> {
         driver.gotoRatePage()
-            .let { driver.getRateList() }
+        return driver.getRateList()
+    }
 
     override fun closeApp() = config.close()
 
