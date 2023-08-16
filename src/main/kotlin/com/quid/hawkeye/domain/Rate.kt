@@ -1,6 +1,7 @@
 package com.quid.hawkeye.domain
 
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDateTime
 
 data class Rate(
@@ -11,6 +12,6 @@ data class Rate(
     private val sendCurrency: String,
     private val receiveAmount:BigDecimal,
     private val receiveCurrency: String,
-    private val rate: BigDecimal,
+    private val rate: BigDecimal = sendAmount.divide(receiveAmount, 2, RoundingMode.DOWN),
     private val regDate: LocalDateTime = LocalDateTime.now(),
 )

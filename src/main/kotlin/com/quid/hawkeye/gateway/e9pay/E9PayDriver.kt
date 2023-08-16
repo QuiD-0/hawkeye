@@ -79,8 +79,7 @@ interface E9PayDriver {
             val sendCurrency = driver.until { it.findElement(AppiumBy.id(SEND_CURRENCY)).text }
             val receiveAmount = driver.until { it.findElement(AppiumBy.id(RECEIVE_AMOUNT)).text }
             val receiveCurrency = driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text }
-            val rate = driver.until { it.findElement(AppiumBy.id(RATE)).text }
-            logger.info("country: $country, type: $type, sendAmount: $sendAmount, sendCurrency: $sendCurrency, receiveAmount: $receiveAmount, receiveCurrency: $receiveCurrency, rate: $rate")
+            logger.info("country: $country, type: $type, sendAmount: $sendAmount, sendCurrency: $sendCurrency, receiveAmount: $receiveAmount, receiveCurrency: $receiveCurrency")
             return Rate(
                 appName = AppInfo.E9PAY.name,
                 country = country,
@@ -89,13 +88,9 @@ interface E9PayDriver {
                 sendCurrency = sendCurrency,
                 receiveAmount = receiveAmount.replace(",","").toBigDecimal(),
                 receiveCurrency = receiveCurrency,
-                rate = calculateRate(rate)
             )
         }
 
-        private fun calculateRate(rate: String): BigDecimal {
-            return BigDecimal.ZERO
-        }
 
         private fun getRemittanceTypeCount(): Int {
             var typeCount = 1
