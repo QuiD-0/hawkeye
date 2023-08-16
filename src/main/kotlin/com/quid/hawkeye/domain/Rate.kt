@@ -13,5 +13,4 @@ data class Rate(
     private val receiveCurrency: String,
     private val rate: BigDecimal,
     private val regDate: LocalDateTime = LocalDateTime.now(),
-) {
-}
+)

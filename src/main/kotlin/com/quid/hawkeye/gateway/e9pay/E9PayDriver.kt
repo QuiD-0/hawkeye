@@ -8,6 +8,7 @@ import io.appium.java_client.AppiumBy
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.stereotype.Component
 import java.lang.Thread.sleep
+import java.math.BigDecimal
 import java.time.Duration
 
 interface E9PayDriver {
@@ -47,6 +48,7 @@ interface E9PayDriver {
         override fun getRateList(): List<Rate> {
             var countryIndex = 1
             val history = mutableListOf<String>()
+            val rateList = mutableListOf<Rate>()
             selectCountry()
             val pageCount = getPageCount()
             while (countryIndex<=pageCount){
@@ -56,14 +58,14 @@ interface E9PayDriver {
                 val typeCount = getRemittanceTypeCount()
                 if (typeCount==1){
                     sleep(500)
-                    getRateInfo(country)
+                    rateList.add(getRateInfo(country))
                 } else{
                     for (typeIndex in 1 .. typeCount){
                         driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
                         sleep(500)
                         driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[$typeIndex]"))[0].click() }
                         sleep(500)
-                        getRateInfo(country)
+                        rateList.add(getRateInfo(country))
                     }
                 }
                 history.add(country+currency)
@@ -86,14 +88,27 @@ interface E9PayDriver {
             return driver.until { it.findElements(AppiumBy.xpath(COUNTRY_LIST_COUNT)).size }
         }
 
-        private fun getRateInfo(country: String) {
+        private fun getRateInfo(country: String): Rate {
             val type = driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_TEXT)).text }
             val sendAmount = driver.until { it.findElement(AppiumBy.id(SEND_AMOUNT)).text }
             val sendCurrency = driver.until { it.findElement(AppiumBy.id(SEND_CURRENCY)).text }
             val receiveAmount = driver.until { it.findElement(AppiumBy.id(RECEIVE_AMOUNT)).text }
             val receiveCurrency = driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text }
             val rate = driver.until { it.findElement(AppiumBy.id(RATE)).text }
-            println("rateInfo : $country, $type, $sendAmount, $sendCurrency, $receiveAmount, $receiveCurrency, $rate")
+            return Rate(
+                appName = AppInfo.E9PAY.name,
+                country = country,
+                remittanceType = type,
+                sendAmount = sendAmount.toBigDecimal(),
+                sendCurrency = sendCurrency,
+                receiveAmount = receiveAmount.toBigDecimal(),
+                receiveCurrency = receiveCurrency,
+                rate = calculateRate(rate)
+            )
+        }
+
+        private fun calculateRate(rate: String): BigDecimal {
+            return BigDecimal.ZERO
         }
 
         private fun getRemittanceTypeCount(): Int {

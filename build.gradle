@@ -26,6 +26,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'io.appium:java-client:8.1.1'
     implementation 'org.seleniumhq.selenium:selenium-java:4.11.0'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.withType(KotlinCompile) {
