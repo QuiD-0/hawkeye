@@ -1,15 +1,12 @@
 package com.quid.hawkeye.gateway.e9pay
 
-import com.quid.hawkeye.config.AppiumConfig
 import com.quid.hawkeye.domain.AppInfo
-import com.quid.hawkeye.domain.PhoneType
 import com.quid.hawkeye.domain.Rate
 import io.appium.java_client.AppiumBy
 import org.openqa.selenium.support.ui.WebDriverWait
-import org.springframework.stereotype.Component
+import org.slf4j.LoggerFactory
 import java.lang.Thread.sleep
 import java.math.BigDecimal
-import java.time.Duration
 
 interface E9PayDriver {
     fun selectLanguage()
@@ -20,6 +17,7 @@ interface E9PayDriver {
     class E9PayAppiumDriver(
         private val driver: WebDriverWait
     ) : E9PayDriver {
+        private val logger = LoggerFactory.getLogger(E9PayAppiumDriver::class.java)
 
         override fun selectLanguage() {
             driver.until { it.findElement(AppiumBy.id(KOREA_BTN)).click() }
@@ -82,7 +80,7 @@ interface E9PayDriver {
             val receiveAmount = driver.until { it.findElement(AppiumBy.id(RECEIVE_AMOUNT)).text }
             val receiveCurrency = driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text }
             val rate = driver.until { it.findElement(AppiumBy.id(RATE)).text }
-            println("country: $country, type: $type, sendAmount: $sendAmount, sendCurrency: $sendCurrency, receiveAmount: $receiveAmount, receiveCurrency: $receiveCurrency, rate: $rate")
+            logger.info("country: $country, type: $type, sendAmount: $sendAmount, sendCurrency: $sendCurrency, receiveAmount: $receiveAmount, receiveCurrency: $receiveCurrency, rate: $rate")
             return Rate(
                 appName = AppInfo.E9PAY.name,
                 country = country,
@@ -125,7 +123,6 @@ interface E9PayDriver {
                 function()
             } catch (e: Exception) {
                 if (i > 0) {
-                    println("retry")
                     sleep(3000)
                     retry(i - 1, function)
                 } else {
