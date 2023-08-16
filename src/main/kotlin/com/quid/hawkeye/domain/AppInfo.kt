@@ -8,4 +8,8 @@ enum class AppInfo(
         packageName = "com.e9pay.remittance2",
         activityName = "com.e9pay.remittance.main.IntroActivity",
     ),
+    SENTBE(
+        packageName = "com.sentbe",
+        activityName = "com.sentbe.presentation.ui.splash.SplashActivity",
+    ),
 }
