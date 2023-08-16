@@ -5,6 +5,7 @@ import com.quid.hawkeye.domain.AppInfo
 import com.quid.hawkeye.domain.PhoneType
 import com.quid.hawkeye.domain.Rate
 import io.appium.java_client.AppiumBy
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.stereotype.Component
 import java.lang.Thread.sleep
@@ -46,36 +47,47 @@ interface E9PayDriver {
 
         override fun getRateList(): List<Rate> {
             var countryIndex = 1
-            val test = mutableListOf<String>()
+            val history = mutableListOf<String>()
             selectCountry()
-            val pageCount = getPageCount()
-            while (countryIndex<=pageCount){
-                val country = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}1]"))[0].text }
-                val currency = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}2]"))[0].text }
-                driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex]"))[0].click() }
-                sleep(3000)
-                val typeCount = getRemittanceTypeCount()
-                for (typeIndex in 1 .. typeCount){
-                    driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
-                    sleep(1000)
-                    driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[$typeIndex]"))[0].click() }
-                    sleep(500)
-                    getRateInfo(country)
-                }
-
-                test.add(country+currency)
-                selectCountry()
-                countryIndex++
-                val prevCode = getPrevCode(countryIndex)
-                if(!test.contains(prevCode)){
-                    countryIndex--
-                }
-            }
+            germanTest()
+////            val pageCount = getPageCount()
+////            while (countryIndex<=pageCount){
+////                val country = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}1]"))[0].text }
+////                val currency = driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex${POST_COUNTRY_CURRENCY_LIST}2]"))[0].text }
+////                driver.until { it.findElements(AppiumBy.xpath("$PREV_COUNTRY_CURRENCY_LIST$countryIndex]"))[0].click() }
+////                val typeCount = getRemittanceTypeCount()
+////                if (typeCount==1){
+////                    sleep(500)
+////                    getRateInfo(country)
+////                } else{
+////                    for (typeIndex in 1 .. typeCount){
+////                        driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
+////                        sleep(500)
+////                        driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[$typeIndex]"))[0].click() }
+////                        sleep(500)
+////                        getRateInfo(country)
+////                    }
+////                }
+////                history.add(country+currency)
+////                selectCountry()
+////                countryIndex++
+////                val prevCode = getPrevCode(countryIndex)
+////                if(!history.contains(prevCode)){
+////                    countryIndex--
+////                }
+//            }
             return mutableListOf()
         }
 
+        private fun germanTest() {
+            driver.until { it.findElement(AppiumBy.id("com.e9pay.remittance2:id/search_editText")).sendKeys("독") }
+            driver.until { it.findElement(AppiumBy.id("com.e9pay.remittance2:id/item_container")).click() }
+            driver.until(ExpectedConditions.attributeToBeNotEmpty(driver.until { it.findElement(AppiumBy.id(SEND_AMOUNT)) }, "text"))
+            getRateInfo("독일")
+        }
+
         private fun getPageCount(): Int {
-            return driver.until { it.findElements(AppiumBy.xpath(COUNTRY_LIST_COUNT)).size }.also { println("count = $it") }
+            return driver.until { it.findElements(AppiumBy.xpath(COUNTRY_LIST_COUNT)).size }
         }
 
         private fun getRateInfo(country: String) {
@@ -83,21 +95,15 @@ interface E9PayDriver {
             val sendAmount = driver.until { it.findElement(AppiumBy.id(SEND_AMOUNT)).text }
             val sendCurrency = driver.until { it.findElement(AppiumBy.id(SEND_CURRENCY)).text }
             val receiveAmount = driver.until { it.findElement(AppiumBy.id(RECEIVE_AMOUNT)).text }
-            val receiveCurrency =
-                driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text }
+            val receiveCurrency = driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text }
             val rate = driver.until { it.findElement(AppiumBy.id(RATE)).text }
-            println("""rateInfo :
-                    $country 
-                    $type
-                    $sendAmount $sendCurrency
-                    $receiveAmount $receiveCurrency
-                    $rate
-                    """)
+            println("""rateInfo : $country, $type, $sendAmount, $sendCurrency, $receiveAmount, $receiveCurrency, $rate""")
         }
 
         private fun getRemittanceTypeCount(): Int {
+            driver.until(ExpectedConditions.attributeToBeNotEmpty(driver.until { it.findElement(AppiumBy.id(SEND_AMOUNT)) }, "text"))
             driver.until { it.findElement(AppiumBy.id(REMITTANCE_TYPE_SELECTOR)).click() }
-            sleep(1000)
+            sleep(500)
             val typeCount = driver.until { it.findElements(AppiumBy.xpath(REMITTANCE_TYPE_LIST)).size }
             driver.until { it.findElements(AppiumBy.xpath("$REMITTANCE_TYPE[1]"))[0].click() }
             return typeCount
@@ -105,7 +111,7 @@ interface E9PayDriver {
 
         private fun selectCountry() {
             driver.until { it.findElement(AppiumBy.id(SELECT_COUNTRY)).click() }
-            sleep(1000)
+            sleep(500)
         }
 
         private fun getPrevCode(countryIndex: Int): String {
