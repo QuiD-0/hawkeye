@@ -3,9 +3,7 @@ package com.quid.hawkeye.e9pay.usecase
 import com.quid.hawkeye.config.AppiumConfig
 import com.quid.hawkeye.domain.AppInfo
 import com.quid.hawkeye.domain.PhoneType
-import com.quid.hawkeye.gateway.e9pay.E9PayDriver
-import com.quid.hawkeye.gateway.e9pay.E9PayDriver.*
-import com.quid.hawkeye.usecase.E9PayApp
+import com.quid.hawkeye.gateway.appium.E9PayDriver.*
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.support.ui.WebDriverWait
 import java.time.Duration
@@ -24,6 +22,7 @@ class GetRateListTest {
         }
         val rateList = driver.getRateList()
         println(rateList)
+        config.close()
     }
 
 }

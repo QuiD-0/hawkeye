@@ -1,4 +1,4 @@
-package com.quid.hawkeye.gateway.e9pay
+package com.quid.hawkeye.gateway.appium
 
 import com.quid.hawkeye.domain.AppInfo
 import com.quid.hawkeye.domain.Rate
@@ -6,7 +6,6 @@ import io.appium.java_client.AppiumBy
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.slf4j.LoggerFactory
 import java.lang.Thread.sleep
-import java.math.BigDecimal
 
 interface E9PayDriver {
     fun selectLanguage()
