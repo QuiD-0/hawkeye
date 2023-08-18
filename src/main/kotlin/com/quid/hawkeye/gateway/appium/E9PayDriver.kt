@@ -9,7 +9,7 @@ import java.lang.Thread.sleep
 
 interface E9PayDriver {
     fun selectLanguage()
-    fun permissionAllow()
+    fun allowPermission()
     fun gotoRatePage()
     fun getRateList(): List<Rate>
 
@@ -22,7 +22,7 @@ interface E9PayDriver {
             driver.until { it.findElement(AppiumBy.id(KOREA_BTN)).click() }
         }
 
-        override fun permissionAllow() {
+        override fun allowPermission() {
             driver.until { it.findElement(AppiumBy.id(PERMISSION_LIST_ALLOW)).click() }
             driver.until { it.findElement(AppiumBy.id(PERMISSION_ALLOW_FOREGROUND_ONLY)).click() }
             driver.until { it.findElement(AppiumBy.id(PERMISSION_ALLOW_BUTTON)).click() }

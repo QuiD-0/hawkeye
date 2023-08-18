@@ -32,7 +32,7 @@ class E9PayApp: App {
         this.wait = WebDriverWait(config.driver(), Duration.ofSeconds(10))
         this.driver = E9PayAppiumDriver(wait).apply {
             selectLanguage()
-            permissionAllow()
+            allowPermission()
         }
     }
 
