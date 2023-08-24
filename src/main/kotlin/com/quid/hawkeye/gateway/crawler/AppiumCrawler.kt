@@ -19,7 +19,7 @@ class AppiumCrawler(
         appList.forEach {
             try {
                 logger.info("========Crawling Start ${it.javaClass.simpleName}========")
-                it.use(PhoneType.GALAXY_A30) { app ->
+                it.use(PhoneType.GALAXY_S10E) { app ->
                     rateGateway.save(app.getRateList())
                 }
                 logger.info("========Crawling End ${it.javaClass.simpleName}========")

@@ -38,21 +38,44 @@ interface SentBeDriver {
             sleep(10000)
             val result = mutableListOf<Rate>()
             countryList.forEach { country ->
-                driver.until { it.findElement(AppiumBy.id(COUNTRY_CLICK_BTN)).click() }
-                driver.until { it.findElement(AppiumBy.id(COUNTRY_SEARCH_BTN)).sendKeys(country) }
+                selectCountry(country)
                 val count = driver.until { it.findElements(AppiumBy.xpath(COUNTRY_LIST)).size }
                 if (count==1){
-                    val currency = driver.until { it.findElement(AppiumBy.id("com.sentbe:id/tv_new_country_name")).text }.split("/")[1].replace(" ","")
-                    driver.until { it.findElement(AppiumBy.accessibilityId("위로 이동")).click() }
+                    click(0)
+                    parseRateTest()
                 }else{
                     for(i in 1..count){
-                        println("index = $i")
+                        click(1)
+                        parseRateTest()
+                        selectCountry(country)
+                        click(2)
+                        parseRateTest()
                     }
-                    driver.until { it.findElement(AppiumBy.accessibilityId("위로 이동")).click() }
                 }
-
             }
             return emptyList()
+        }
+
+        private fun parseRateTest() {
+            driver.until { it.findElement(AppiumBy.id("com.sentbe:id/recieve_amount_input")).text }
+                .also { logger.info("receive amount: $it") }
+        }
+
+        private fun selectCountry(country: String) {
+            driver.until { it.findElement(AppiumBy.id(COUNTRY_CLICK_BTN)).click() }
+            driver.until { it.findElement(AppiumBy.id(COUNTRY_SEARCH_BTN)).sendKeys(country) }
+        }
+
+        private fun click(i: Int) {
+            if(i==0){
+                driver.until { it.findElement(AppiumBy.xpath(COUNTRY_SELECT)).click() }
+            } else{
+                val currency = driver.until { it.findElement(AppiumBy.xpath("$COUNTRY_CURRENCY_PREFIX[$i]$COUNTRY_CURRENCY_SUFFIX")).text }.split("/")[1].replace(" ","")
+                driver.until { it.findElement(AppiumBy.xpath("$COUNTRY_SELECT[$i]")).click() }
+                if(currency == "USD"){
+                    driver.until { it.findElement(AppiumBy.id(PROCEED_BTN)).click() }
+                }
+            }
         }
 
         companion object {
@@ -67,14 +90,17 @@ interface SentBeDriver {
             const val COUNTRY_CLICK_BTN = "com.sentbe:id/cl_recieve_amount_country"
             const val COUNTRY_SEARCH_BTN = "com.sentbe:id/et_search_country"
             const val COUNTRY_LIST = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.LinearLayout/androidx.recyclerview.widget.RecyclerView/*"
+            const val COUNTRY_CURRENCY_NAME = "com.sentbe:id/tv_new_country_name"
+            const val COUNTRY_SELECT = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.LinearLayout/androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup"
+            const val COUNTRY_CURRENCY_PREFIX = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.LinearLayout/androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup"
+            const val COUNTRY_CURRENCY_SUFFIX = "/android.widget.TextView"
+            const val PROCEED_BTN = "com.sentbe:id/tv_proceed_button"
 
-
-            val  countryList = listOf("러시아", "홍콩")
-//            val countryList = listOf(
-//                "나이지리아", "남아프리카공화국", "네덜란드", "네팔", "뉴질랜드", "덴마크", "독일", "라트비아", "러시아", "룩셈부르크", "리투아니아", "말레이시아", "모나코", "몰타", "몽골", "미국", "미얀마","방글라데시",
-//                "베트남", "벨기에", "불가리아", "스리랑카", "스웨덴", "스페인", "싱가포르", "아일랜드", "에스토니아", " 영국", "오스트리아" ,"우즈베키스탄", "우크라이나", "이탈리아", "인도","인도네시아","일본","중국",
-//                "카자흐스탄", "캄보디아", "캐나다", "키르기스스탄", "키프로스", "타지키스탄", "태국", "터키", "파키스탄", "포르투갈","폴란드","프랑스","핀란드","필리핀","호주","홍콩"
-//            )
+            val countryList = listOf(
+                "나이지리아", "남아프리카공화국", "네덜란드", "네팔", "뉴질랜드", "덴마크", "독일", "라트비아", "러시아", "룩셈부르크", "리투아니아", "말레이시아", "모나코", "몰타", "몽골", "미국", "미얀마","방글라데시",
+                "베트남", "벨기에", "불가리아", "스리랑카", "스웨덴", "스페인", "싱가포르", "아일랜드", "에스토니아", " 영국", "오스트리아" ,"우즈베키스탄", "우크라이나", "이탈리아", "인도","인도네시아","일본","중국",
+                "카자흐스탄", "캄보디아", "캐나다", "키르기스스탄", "키프로스", "타지키스탄", "태국", "터키", "파키스탄", "포르투갈","폴란드","프랑스","핀란드","필리핀","호주","홍콩"
+            )
         }
     }
 
