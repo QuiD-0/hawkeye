@@ -19,6 +19,7 @@ class SentBeTest {
             selectLanguage()
             selectCountry()
         }
+        driver.getRateList()
 //        config.close()
     }
 }

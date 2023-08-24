@@ -15,9 +15,7 @@ class SentBeApp: App {
     private lateinit var wait: WebDriverWait
     private lateinit var driver: SentBeDriver
 
-    override fun getRateList(): List<Rate> {
-        TODO("Not yet implemented")
-    }
+    override fun getRateList(): List<Rate> = driver.getRateList()
 
     override fun use(phone: PhoneType, block: (App) -> Unit) {
         initApp(phone)
@@ -28,6 +26,10 @@ class SentBeApp: App {
     private fun initApp(phone: PhoneType) {
         this.config = AppiumConfig(phone, AppInfo.SENTBE)
         this.wait = WebDriverWait(config.driver(), java.time.Duration.ofSeconds(10))
-        this.driver = SentBeAppiumDriver(wait)
+        this.driver = SentBeAppiumDriver(wait).apply {
+            allowPermission()
+            selectLanguage()
+            selectCountry()
+        }
     }
 }
