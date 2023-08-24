@@ -44,13 +44,11 @@ interface SentBeDriver {
                     click(0)
                     parseRateTest()
                 }else{
-                    for(i in 1..count){
-                        click(1)
-                        parseRateTest()
-                        selectCountry(country)
-                        click(2)
-                        parseRateTest()
-                    }
+                    click(1)
+                    parseRateTest()
+                    selectCountry(country)
+                    click(2)
+                    parseRateTest()
                 }
             }
             return emptyList()
