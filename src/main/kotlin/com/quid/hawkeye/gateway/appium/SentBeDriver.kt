@@ -5,6 +5,7 @@ import io.appium.java_client.AppiumBy
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.slf4j.LoggerFactory
 import java.lang.Thread.sleep
+import java.math.BigDecimal
 
 interface SentBeDriver {
     fun allowPermission()
@@ -42,21 +43,30 @@ interface SentBeDriver {
                 val count = driver.until { it.findElements(AppiumBy.xpath(COUNTRY_LIST)).size }
                 if (count==1){
                     click(0)
-                    parseRateTest()
+                    result.add(parseRate(country))
                 }else{
                     click(1)
-                    parseRateTest()
+                    result.add(parseRate(country))
                     selectCountry(country)
                     click(2)
-                    parseRateTest()
+                    result.add(parseRate(country))
                 }
             }
             return emptyList()
         }
 
-        private fun parseRateTest() {
-            driver.until { it.findElement(AppiumBy.id("com.sentbe:id/recieve_amount_input")).text }
-                .also { logger.info("receive amount: $it") }
+        private fun parseRate(country:String):Rate {
+            val amount = driver.until { it.findElement(AppiumBy.id("com.sentbe:id/recieve_amount_input")).text }
+
+            return Rate(
+                appName = "SentBe",
+                country = country,
+                sendAmount = BigDecimal.ZERO,
+                sendCurrency = "KRW",
+                receiveAmount = BigDecimal.ZERO,
+                receiveCurrency =  "USD",
+                remittanceType = "Bank",
+            )
         }
 
         private fun selectCountry(country: String) {
