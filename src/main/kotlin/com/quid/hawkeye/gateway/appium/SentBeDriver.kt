@@ -52,26 +52,22 @@ interface SentBeDriver {
                     result.add(parseRate(country))
                 }
             }
-            return emptyList()
+            return result
         }
 
-        private fun parseRate(country:String):Rate {
-            val amount = driver.until { it.findElement(AppiumBy.id("com.sentbe:id/recieve_amount_input")).text }
-
-            return Rate(
-                appName = "SentBe",
-                country = country,
-                sendAmount = BigDecimal.ZERO,
-                sendCurrency = "KRW",
-                receiveAmount = BigDecimal.ZERO,
-                receiveCurrency =  "USD",
-                remittanceType = "Bank",
-            )
-        }
+        private fun parseRate(country: String): Rate = Rate(
+            appName = "SentBe",
+            country = country,
+            sendAmount = driver.until { it.findElement(AppiumBy.id(SEND_AMOUNT)).text }.replace(",", "").toBigDecimal(),
+            sendCurrency = driver.until { it.findElement(AppiumBy.id(SEND_CURRENCY)).text },
+            receiveAmount = driver.until { it.findElement(AppiumBy.id(RECEIVE_AMOUNT)).text }.replace(",", "").toBigDecimal(),
+            receiveCurrency = driver.until { it.findElement(AppiumBy.id(RECEIVE_CURRENCY)).text },
+            remittanceType = "Bank",
+        ).also { logger.info("SentBe Rate: $it") }
 
         private fun selectCountry(country: String) {
-            driver.until { it.findElement(AppiumBy.id(COUNTRY_CLICK_BTN)).click() }
-            driver.until { it.findElement(AppiumBy.id(COUNTRY_SEARCH_BTN)).sendKeys(country) }
+            driver.until { it.findElement(AppiumBy.id(COUNTRY_CLICK_BTN)) }.click()
+            driver.until { it.findElement(AppiumBy.id(COUNTRY_SEARCH_BTN)) }.sendKeys(country)
         }
 
         private fun click(i: Int) {
@@ -98,15 +94,18 @@ interface SentBeDriver {
             const val COUNTRY_CLICK_BTN = "com.sentbe:id/cl_recieve_amount_country"
             const val COUNTRY_SEARCH_BTN = "com.sentbe:id/et_search_country"
             const val COUNTRY_LIST = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.LinearLayout/androidx.recyclerview.widget.RecyclerView/*"
-            const val COUNTRY_CURRENCY_NAME = "com.sentbe:id/tv_new_country_name"
             const val COUNTRY_SELECT = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.LinearLayout/androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup"
             const val COUNTRY_CURRENCY_PREFIX = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.LinearLayout/androidx.recyclerview.widget.RecyclerView/android.view.ViewGroup"
             const val COUNTRY_CURRENCY_SUFFIX = "/android.widget.TextView"
             const val PROCEED_BTN = "com.sentbe:id/tv_proceed_button"
+            const val SEND_AMOUNT = "com.sentbe:id/sending_amount_input"
+            const val RECEIVE_AMOUNT = "com.sentbe:id/recieve_amount_input"
+            const val SEND_CURRENCY = "com.sentbe:id/sending_amount_country_text"
+            const val RECEIVE_CURRENCY = "com.sentbe:id/recieve_amount_country_text"
 
             val countryList = listOf(
                 "나이지리아", "남아프리카공화국", "네덜란드", "네팔", "뉴질랜드", "덴마크", "독일", "라트비아", "러시아", "룩셈부르크", "리투아니아", "말레이시아", "모나코", "몰타", "몽골", "미국", "미얀마","방글라데시",
-                "베트남", "벨기에", "불가리아", "스리랑카", "스웨덴", "스페인", "싱가포르", "아일랜드", "에스토니아", " 영국", "오스트리아" ,"우즈베키스탄", "우크라이나", "이탈리아", "인도","인도네시아","일본","중국",
+                "베트남", "벨기에", "불가리아", "스리랑카", "스웨덴", "스페인", "싱가포르", "아일랜드", "에스토니아", "영국", "오스트리아" ,"우즈베키스탄", "우크라이나", "이탈리아", "인도","인도네시아","일본","중국",
                 "카자흐스탄", "캄보디아", "캐나다", "키르기스스탄", "키프로스", "타지키스탄", "태국", "터키", "파키스탄", "포르투갈","폴란드","프랑스","핀란드","필리핀","호주","홍콩"
             )
         }
